@@ -1,0 +1,721 @@
+CREATE TABLE Branch (
+    branch_id INTEGER,
+    branch_name VARCHAR(50),
+    branch_city VARCHAR(50),
+    branch_state_cd CHAR(2),
+    assets NUMERIC(11 , 2 ),
+    PRIMARY KEY (branch_id)
+);
+
+
+    CREATE TABLE Loan (
+    loan_number INTEGER,
+    branch_id INTEGER,
+    amount NUMERIC(8 , 2 ),
+    PRIMARY KEY (loan_number),
+    FOREIGN KEY (branch_id)
+        REFERENCES branch (branch_id)
+);
+
+        
+CREATE TABLE Customer (
+    customer_id INTEGER,
+    customer_name VARCHAR(30),
+    customer_street VARCHAR(30),
+    customer_city VARCHAR(50),
+    customer_state_cd CHAR(2),
+    PRIMARY KEY (customer_id)
+);
+
+        
+CREATE TABLE borrower (
+    customer_id INTEGER,
+    loan_number INTEGER,
+    PRIMARY KEY (customer_id , loan_number),
+    FOREIGN KEY (customer_id)
+        REFERENCES customer (customer_id),
+    FOREIGN KEY (loan_number)
+        REFERENCES loan (loan_number)
+);
+
+
+
+    CREATE TABLE depositor (
+    customer_id INTEGER,
+    account_number INTEGER,
+    PRIMARY KEY (customer_id , account_number),
+    FOREIGN KEY (customer_id)
+        REFERENCES customer (customer_id),
+    FOREIGN KEY (account_number)
+        REFERENCES account (account_number)
+);
+
+
+CREATE TABLE account (
+    account_number INTEGER,
+    branch_id INTEGER,
+    balanace numeric(8,2),
+    primary key (account_number),
+    foreign key (branch_id) references branch (branch_id)
+    );
+
+    
+    
+        
+        
+    drop table account;
+    
+
+INSERT INTO branch (branch_id,branch_name, branch_city, branch_state_cd, assets)
+VALUES (1,'DowntownChi', 'Chicago', 'IL', 40000000.00),
+		(2,'UptownMPL', 'Minneapolis', 'MN', 32000000.00),
+		(3,'DowntownSP', 'St. Paul', 'MN', 21000000.00),
+		(4,'Lucky Spot', 'Luck', 'WI', 23000000.00);    
+        
+        
+INSERT INTO Loan (loan_number,branch_id, amount)
+VALUES (1001, 1, 2008.08),
+		(1002, 1, 3201.06),
+		(1003, 2, 4508.03),
+		(1004, 3, 21008.00),
+        (1007, 4, 12903.00),
+		(1011, 4, 218934.34);
+        
+
+INSERT INTO customer (customer_id,customer_name, customer_street,customer_city,customer_state_cd)
+VALUES (1, 'Gretzky', '14 S 6th St.', 'St. Paul', 'MN'),
+		(4, 'Carr', '16699 39th Ave N', 'Gary', 'IL'),
+		(2, 'Kilmer', '205 Dupont Ave. N', 'Minneapolis', 'MN'),
+		(3, 'Jones', '3598 Smith Rd.', 'Hopkins', 'MN'),
+        (5, 'Jones', '9873 5Th. St.', 'Cumberland', 'WI');
+        
+        
+INSERT INTO borrower (customer_id,loan_number)
+VALUES (4, 1001),
+		(5, 1002),
+		(2, 1003),
+		(1, 1004),
+        (2, 1007),
+        (4,1011);
+
+
+INSERT INTO depositor (customer_id,account_number)
+VALUES (1, 232),
+		(2, 235),
+		(4, 294),
+		(1, 295),
+        (4, 249),
+        (5, 251),
+        (3, 271);
+        
+        
+INSERT INTO account (account_number,branch_id, balanace)
+VALUES (232, 3, 456.23),
+		(235, 2, 4500.19),
+		(294, 1, 6003.63),
+		(295, 3, 7500.00),
+        (251, 2, 2398.22),
+        (249, 1, 670.85),
+        (271, 4, 234718.19);
+        
+
+alter table account1 rename account;
+
+select * from account;
+
+select * from customer;
+
+#Q1.List the Customer Id, Customer Name, and State Code for all customers, sorted by State Code, Customer Name.
+SELECT 
+    customer.customer_id, customer.customer_name, customer.customer_state_cd
+FROM
+    customer
+ORDER BY customer.customer_state_cd , customer.customer_name;
+
+select * from loan;
+
+#Q2. List the loan number and loan amount for all loans belonging to branch 4.
+SELECT 
+    loan.loan_number, loan.amount
+FROM
+    loan
+WHERE
+    loan.branch_id = 4;
+
+#Q3. List the loan number, loan amount from all branches with the branch name “UptownMPL”  or “Lucky Spot” (use branch name, if you have a 1000 branches, you are not going to know the branch #number for each branch name).
+SELECT 
+    loan.loan_number, loan.amount
+FROM
+    loan
+        NATURAL JOIN
+    branch
+WHERE
+    branch.branch_name = 'UptownMPL'
+        OR branch.branch_name = 'Lucky Spot';
+    
+    
+#4.	List all account numbers for customers with the name of “Jones”.
+SELECT 
+    depositor.account_number
+FROM
+    depositor
+        NATURAL JOIN
+    customer
+WHERE
+    customer.customer_name = 'Jones';
+    
+    select * from customer;
+        select * from account;
+            select * from depositor;
+
+
+
+#5.	List all the loan numbers for the branches in the city of Duluth.
+ SELECT 
+    loan.loan_number
+FROM
+    loan
+        NATURAL JOIN
+    branch
+WHERE
+    branch.branch_city = 'Duluth';
+
+
+#6.	For each branch list the branch name, customer name, and customer city for all customers that have a loan at that branch. (note: loans, not accounts)
+SELECT 
+    branch.branch_name,
+    customer.customer_name,
+    customer.customer_city
+FROM
+    customer
+        NATURAL JOIN
+    borrower
+        NATURAL JOIN
+    loan
+        NATURAL JOIN
+    branch;
+    
+    SELECT 
+    *
+FROM
+    customer
+        JOIN
+    borrower
+        JOIN
+    loan
+        JOIN
+    branch;
+    
+    
+
+INSERT INTO customer (customer_id,customer_name, customer_street,customer_city,customer_state_cd)
+VALUES (7, 'Ford', '19 14th Ave N', 'Granite City', 'WI');
+
+DELETE FROM customer where customer_id = 7;
+
+Insert INTO LOAN (loan_number, branch_id, amount)
+values  (1005, 5, 30000.00);
+
+
+Insert into Account (account.account_number, account.branch_id, account.balanace)
+      values (296, 3, 7500.00);
+      
+select * from account;
+
+
+Insert into LOAN (loan.loan_number, loan.branch_id, loan.amount)
+values (1006, 4, 45000.00);
+
+
+Insert into Borrower (borrower.customer_id, borrower.loan_number)
+values(7,1006);
+
+select *  from borrower;
+
+select * from loan;
+
+
+#Homework4
+#Q1. Find how many branches have loans between $4,000.00 and $26,000.00.  HINT: Do not manually count the rows, have the DBMS engine do the work. 
+SELECT 
+    COUNT(DISTINCT loan.branch_id) AS 'branchWithLoans'
+FROM
+    loan
+WHERE
+    loan.amount BETWEEN 4000 AND 26000;
+        
+
+#Q2. For each branch, find the median loan amount. Your output should include Branch Id, median loan amount for that Branch. 
+SELECT 
+    loan.branch_id, MIN(amount) as 'Min_Loan_Amount', MAX(amount) as 'Max_Loan_Amount'
+FROM
+    loan
+GROUP BY loan.branch_id;
+
+
+#Q3. Find how many accounts there are for each customer in MN. The output should include customer id and number of accounts for that customer. 		
+SELECT 
+    customer.customer_id, COUNT(depositor.account_number) AS 'number_of_accounts'
+FROM
+    depositor
+        NATURAL JOIN
+    customer
+GROUP BY customer.customer_id, customer.customer_state_cd
+HAVING customer.customer_state_cd = 'MN';
+
+    
+select * from customer;
+
+#Q4. Find the largest account balance for each Customer. The output should be a list of Customer Id, Customer Name for each Customer Id, and largest account balance for that Customer. 
+SELECT 
+    customer.customer_id,
+    customer.customer_name,
+    MAX(account.balanace) AS 'largest_account_balance'
+FROM
+    customer
+        NATURAL JOIN
+    depositor
+        NATURAL JOIN
+    account
+GROUP BY customer.customer_id , customer.customer_name;
+
+SELECT 
+    *
+FROM
+    account
+        NATURAL JOIN
+    depositor;
+
+#Q5. Find Customer ID, Customer name and Customer State for all loans, sorted by Customer State, then Customer Name. 
+SELECT DISTINCT
+    (customer.customer_id),
+    customer.customer_name,
+    customer.customer_state_cd
+FROM
+    customer
+        NATURAL JOIN
+    borrower
+ORDER BY customer.customer_state_cd , customer.customer_name;
+
+
+#Q6. Find Customer ID, Customer name and the number of loans for each Customer.
+SELECT 
+    customer.customer_id,
+    customer.customer_name,
+    COUNT(borrower.loan_number) AS 'number_of_loans'
+FROM
+    customer
+        NATURAL JOIN
+    borrower
+GROUP BY customer.customer_id , customer.customer_name;
+
+
+#Q7. Find Loan number and Customer Id of the account with the lowest amount. 
+SELECT 
+    loan.loan_number,
+    borrower.customer_id,
+    MIN(loan.amount) AS 'lowest_amount'
+FROM
+    loan
+        NATURAL JOIN
+    borrower;
+
+
+#Q8. Create a view called Luck_Branch_V that contains Branch Id, Branch name, Customer ID and Customer Name for all the loans for each Branch that is in the city of Luck. 
+CREATE VIEW Luck_Branch_V AS
+    SELECT 
+        branch.branch_id,
+        branch.branch_name,
+        customer.customer_id,
+        customer.customer_name
+    FROM
+        branch
+            NATURAL JOIN
+        loan
+            NATURAL JOIN
+        borrower
+            NATURAL JOIN
+        customer
+    WHERE
+        branch.branch_city = 'luck';
+        
+    drop view luck_branch_v;
+	select * from luck_branch_v;
+	select * from branch;
+    	select * from loan;
+
+        
+#Q9. For each Customer in Denver, find the balance in their account(s).   
+    SELECT 
+    customer.customer_name, account.balanace
+FROM
+    customer
+        NATURAL JOIN
+    depositor
+        NATURAL JOIN
+    account
+WHERE
+    customer.customer_city = 'Denver';
+    
+    
+select * from customer;
+    
+#Q10. Find how many different accounts each customer has at each Branch. The output should be a list of Customer ID and for each Customer ID, the number of accounts for this customer by Branch ID. 
+SELECT 
+    customer.customer_id,
+    COUNT(account.account_number) AS 'number_of_accounts',
+    loan.branch_id
+FROM
+    customer
+        NATURAL JOIN
+    depositor
+        NATURAL JOIN
+    account
+        NATURAL JOIN
+    loan
+GROUP BY customer.customer_id , account.branch_id;
+
+
+#Q11. Count how many customers live in the state of WI. 
+SELECT 
+    COUNT(customer.customer_id) AS 'numberOfCustomers'
+FROM
+    customer
+WHERE
+    customer.customer_state_cd = 'WI';
+
+
+
+ CREATE TABLE location (
+    stationName VARCHAR(30),
+    latitude INTEGER,
+    longitude INTEGER,
+    PRIMARY KEY (stationName)
+);
+
+select * from location;
+
+drop table location;
+
+ CREATE TABLE wind (
+    stationName VARCHAR(30),
+    Year INTEGER,
+    Month VARCHAR(15),
+    knots DECIMAL(6 , 2 ),
+    PRIMARY KEY (stationName , Year , Month),
+    FOREIGN KEY (stationName)
+        REFERENCES location (stationName)
+);
+
+
+
+
+alter table wind
+rename column wind_speed to knots;
+
+select * from wind limit 10;
+drop table wind;
+SELECT 
+    COUNT(*)
+FROM
+    wind;
+#LIMIT 10;
+
+    
+     CREATE TABLE temperature (
+    stationName VARCHAR(30),
+    year INTEGER,
+    month VARCHAR(15),
+    celcius DECIMAL(6 , 2 ),
+    PRIMARY KEY (stationName , year , month),
+    FOREIGN KEY (stationName)
+        REFERENCES location (stationName)
+);
+
+alter table temperature
+rename column temperature to celcius;
+select * from temperature limit 10;
+
+drop table temperature;
+SELECT 
+    COUNT(*)
+FROM
+    temperature;
+#limit 10;
+
+
+alter table location
+Modify latitude integer;
+
+alter table location
+Modify longitude integer;
+
+delete from temperature;
+
+SET SQL_SAFE_UPDATES = 1;
+
+
+load data infile 'C:\Users\tunei\Downloads\wind.csv' 
+     into table wind 
+     fields terminated by ',' 
+          lines terminated by '\n';
+
+alter table wind modify station_name integer;
+alter table wind DROP PRIMARY KEY;
+
+
+#Q1. Produce a list of station name, year, month, wind speed, temperature.
+SELECT 
+    temperature.stationName,
+    temperature.year as temperatureYear,
+    temperature.month as temperatureMonth,
+    temperature.celcius,
+    wind.Year as windYear,
+    wind.Month as windMonth,
+    wind.knots
+FROM
+    wind
+        NATURAL JOIN
+    temperature;
+
+   
+#Q2. For each station, find the total number of valid wind reports and the total number of valid temperature reports. (Note: do not count NULL as a valid report).
+   SELECT 
+    location.stationName,
+    COUNT(wind.knots) AS 'validWindReports'
+FROM
+    location
+        NATURAL JOIN
+    wind
+WHERE
+    wind.knots IS NOT NULL
+GROUP BY wind.stationName;
+
+ SELECT 
+    location.stationName,
+    COUNT(temperature.celcius) AS 'validTemperatureReports'
+FROM
+    location
+        NATURAL JOIN
+    temperature
+WHERE
+    temperature.celcius IS NOT NULL
+GROUP BY temperature.stationName;
+
+
+#Q3. For each station, find the total number of wind reports and the total number of temperature reports in each year. From the output, identify stations that did not #report a valid reading every month
+SELECT 
+    location.stationName,
+    wind.year,
+    COUNT(wind.knots) AS numberOfWindReportsPerYear
+FROM
+    location
+        NATURAL JOIN
+    wind
+GROUP BY wind.stationName , wind.Year;
+
+SELECT 
+    location.stationName,
+    COUNT(temperature.celcius) AS numberOfTemperatureReportsPerYear
+FROM
+    location
+        NATURAL JOIN
+    temperature
+GROUP BY location.stationName , temperature.year;
+
+#Stations that did not report a valid reading every month are:
+#numberOfWindReportsPerYear: Adelaide, Clean_Air, Faraday, Grytviken, Halley, Neumayer, Rothera, Signy.
+#numberOfTemperatureReportsPerYear: Adelaide, Clean_Air, Faraday, Grytviken, Halley, Neumayer, Rothera, 
+
+
+
+#Q4. Find how many wind speed reports are collected in each month? How many temperature reports are collected each month?
+SELECT 
+    wind.month, COUNT(wind.knots) AS windSpeedReportPerMonth
+FROM
+    wind
+GROUP BY wind.month;
+
+SELECT 
+    temperature.month,
+    COUNT(temperature.celcius) AS temperatureCelciusReportsPerMonth
+FROM
+    temperature
+GROUP BY temperature.month;
+    
+
+
+#5. For each station, find the first year at which the station started to report wind speeds and the 
+#first year at which the station started to report temperature readings.
+
+SELECT 
+    wind.stationName, MIN(wind.Year) AS firstWindYear
+FROM
+    wind
+GROUP BY wind.stationName;
+
+SELECT 
+    temperature.stationName,
+    MIN(temperature.Year) AS firstTemperatureYear
+FROM
+    temperature
+GROUP BY temperature.stationName;
+
+
+#Q6. Find the coldest and hottest temperatures for each station.
+SELECT 
+    temperature.stationName,
+    MIN(temperature.celcius) AS 'coldestTemperature',
+    MAX(temperature.celcius) AS 'hottestTemperature'
+FROM
+    temperature
+GROUP BY temperature.stationName;
+
+
+#Q7. What is the maximum and minimum temperatures reported in 2000? What are the stations that reported these maximum and minimum temperatures?
+SELECT 
+    temperature.stationName,
+    temperature.year,
+    MAX(temperature.celcius) AS 'hottestTemperaturein2000',
+    MIN(temperature.celcius) AS 'coldestTemperaturein2000'
+FROM
+    temperature
+GROUP BY temperature.stationName , temperature.year
+HAVING temperature.year = 2000;
+
+#What are the stations that reported these maximum and minimum temperatures?
+#Solution: Clean_air, Faraday, Halley, Neumayer, Rothera had reports given with values and Grytvken had Null values.
+
+
+#Q8. What is the average wind speed at 90-degree latitude? (Note: do not look at the data to find what stations are located at 90-degree latitude, however, you have to use 90 in your query)
+SELECT 
+    AVG(wind.knots) AS 'averageWindSpeed', location.latitude
+FROM
+    location
+        NATURAL JOIN
+    wind
+GROUP BY location.latitude
+HAVING location.latitude = 90;
+
+
+#Q9. The name of the weather station at the South Pole is called Clean Air, because very little man-made pollution can be found there. Find out what temperatures were recorded at the South Pole such that the output is sorted by temperatures. When is it Summer and when it is winter in South pole?
+ SELECT 
+    temperature.stationName, temperature.celcius
+FROM
+    temperature
+GROUP BY temperature.stationName , temperature.celcius
+HAVING temperature.stationName = 'Clean_Air'
+ORDER BY temperature.celcius;
+
+#Based on the Data it is Summer and Winter half of the year.
+
+#10- For each station, find the maximum, minimum, and average temperature reported in a certain month of the year. Comment on when do you think it is summer and when it is #winter for each station. 
+SELECT 
+    temperature.stationName,
+    temperature.month AS 'juneSummerMonth',
+    MAX(temperature.celcius) AS maxTemperature,
+    MIN(temperature.celcius) AS minTemperature,
+    AVG(temperature.celcius) AS avgTemperature
+FROM
+    temperature
+GROUP BY temperature.stationName , temperature.month
+HAVING temperature.month = 'jun';
+
+
+SELECT 
+    a.studentid, a.name, b.total_marks
+FROM
+    student a,
+    marks b
+WHERE
+    a.studentid = b.studentid
+        AND b.total_marks > (SELECT 
+            total_marks
+        FROM
+            marks
+        WHERE
+            studentid = 'V002');
+
+
+#(SELECT [DISTINCT] subquery_select_argument
+#FROM {table_name | view_name}
+#{table_name | view_name} ...
+#[WHERE search_conditions]
+#[GROUP BY aggregate_expression [, aggregate_expression] ...]
+#[HAVING search_conditions])
+
+
+#Exam 1. 2 Write an SQL statement to increase the amount of all Specialty treatment by 2% 
+UPDATE specialty 
+SET 
+    specialty.treatmentCost = specialty.treatmentCost + (specialty.treatmentCost * 0.02); 
+    
+    
+#2.4) (2 Points) Write a SQL statement to delete all treated rows that were done before 2018
+    DELETE FROM treated 
+WHERE
+    YEAR(treated.dateTreated) < 2018;
+
+#(1 Points) Write an SQL statement to select all Patients where the firstName has a null value 
+SELECT 
+    *
+FROM
+    patient
+WHERE
+    patient.firstName IS NULL;
+
+#3.1.1) (2 Points) Find names and types of all products that are manufactured by ‘Acme’ and has a price greater than or equal to $10.52. 
+SELECT 
+    product.pName, product.type
+FROM
+    product
+WHERE
+    product.manufacturer = 'Acme'
+        AND product.price >= 10.52;
+
+#(3 Points) Find names of all sales people who sell a product that is manufactured by ‘Sears’ and have a last name of ‘Wolfer’ 
+SELECT 
+    salesPerson.salespersonLastName
+FROM
+    salesPerson
+        NATURAL JOIN
+    sells
+        NATURAL JOIN
+    product
+WHERE
+    product.manufacturer = 'Sears'
+        AND salesPerson.salespersonLastName = 'Wolfer';
+
+#(3 Points) Find type and price of all products that have been sold by a salesperson who is from Eagan and quantity < 121. 
+
+SELECT 
+    product.type, product.price
+FROM
+    product
+        NATURAL JOIN
+    sells
+        NATURAL JOIN
+    salesPerson
+WHERE
+    salesPerson.city = 'Eagan'
+        AND sells.quanity < 121;
+
+
+CREATE TABLE treated (
+    doctorId INTEGER,
+    patientSSN INTEGER,
+    cost NUMERIC(7 , 2 ),
+    dateTreated DATE,
+    PRIMARY KEY (doctorId , patientSSN),
+    FOREIGN KEY (doctorId)
+        REFERENCES doctor (doctorId),
+    FOREIGN KEY (patientSSN)
+        REFERENCES patient (patientSSN)
+);
+
+
+#store for later
+CREATE 
+    TRIGGER  insertdatedel
+ BEFORE INSERT ON delivery FOR EACH ROW 
+    SET new . lastupdatedate = CURDATE();
